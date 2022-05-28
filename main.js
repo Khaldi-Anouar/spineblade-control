@@ -30,7 +30,7 @@ $(document).ready(function () {
                 .then(function (user) {
                     logged_in = true;
                     console.log("logged in user:", user);
-                    $("#account_id").text("Account ID: " + user.id + ", Wallet Address: " + user.get("ethAddress"));
+                    $("#account_id").find("span:eq(0)").text("Account ID: " + user.id + ", Wallet Address: " + user.get("ethAddress"));
                     $container_battles.show();
                     $container_login.hide();
                     load_battles();
