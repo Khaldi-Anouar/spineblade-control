@@ -53,17 +53,19 @@ $(document).ready(function () {
         const Battle = Moralis.Object.extend("Battle");
         const query = new Moralis.Query(Battle);
         const results = await query.find();
-        var tr = $($.parseHTML("<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>"));
+        var tr = $($.parseHTML("<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>"));
         $("#table_battles_body").empty();
         for (let i = 0; i < results.length; i++) {
             const object = results[i];
             console.log(object.id);
+            tr.attr("battle-data-id", object.id);
             tr.find("td:eq(0)").text(object.id);
             tr.find("td:eq(1)").text(object.get("name"));
             tr.find("td:eq(2)").text(object.get("players"));
             tr.find("td:eq(3)").text(object.get("max_players"));
             tr.find("td:eq(4)").text(object.get("preparing_time"));
             tr.find("td:eq(5)").text(object.get("status"));
+            tr.find("td:eq(6)").html('<button type="button" class="btn btn-sm btn-danger battle_delete" battle-data-id="' + object.id + '">Delete</button>');
 
             $("#table_battles_body").append(tr.clone())
         }
@@ -93,14 +95,15 @@ $(document).ready(function () {
 
         battle.save().then(
             (battle) => {
-                var tr = $($.parseHTML("<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>"));
+                var tr = $($.parseHTML("<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>"));
+                tr.attr("battle-data-id", battle.id);
                 tr.find("td:eq(0)").text(battle.id);
                 tr.find("td:eq(1)").text(battle.get("name"));
                 tr.find("td:eq(2)").text(battle.get("players"));
                 tr.find("td:eq(3)").text(battle.get("max_players"));
                 tr.find("td:eq(4)").text(battle.get("preparing_time"));
                 tr.find("td:eq(5)").text(battle.get("status"));
-    
+                tr.find("td:eq(6)").html('<button type="button" class="btn btn-sm btn-danger battle_delete" battle-data-id="' + battle.id + '">Delete</button>');
                 $("#table_battles_body").append(tr.clone());
 
                 $("#btn_add_battle").show();
@@ -114,6 +117,30 @@ $(document).ready(function () {
         );
     })
 
+    $(document).on('click', '.battle_delete', function () {
+        const id = $(this).attr("battle-data-id");
+
+        const Battle = Moralis.Object.extend("Battle");
+        const query = new Moralis.Query(Battle);
+
+
+        query.get(id).then(
+            (battle) => {
+                battle.destroy().then(
+                    (deletedBattle) => {
+                        $("#table_battles_body").find('tr[battle-data-id="' + deletedBattle.id + '"]').remove();
+                    },
+                    (error) => {
+                        alert("Unknown error.");
+                    }
+                );
+            },
+            (error) => {
+                alert("Unknown error.");
+            }
+        );
+        alert(id);
+    });
 
     document.getElementById("btn-login").onclick = login;
     document.getElementById("btn-logout").onclick = logOut;
