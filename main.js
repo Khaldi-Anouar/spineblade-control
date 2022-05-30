@@ -139,7 +139,6 @@ $(document).ready(function () {
                 alert("Unknown error.");
             }
         );
-        alert(id);
     });
 
     document.getElementById("btn-login").onclick = login;
